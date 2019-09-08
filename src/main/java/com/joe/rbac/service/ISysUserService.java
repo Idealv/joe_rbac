@@ -3,6 +3,8 @@ package com.joe.rbac.service;
 import com.joe.rbac.entity.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.Set;
+
 /**
  * <p>
  * 用户表 服务类
@@ -13,4 +15,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ISysUserService extends IService<SysUser> {
 
+    SysUser findByUsername(String username);
+
+    Set<String> findPermsByUserId(Integer userId);
+
+    Set<String> findRoleIdByUserId(Integer userId);
 }
