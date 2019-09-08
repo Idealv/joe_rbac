@@ -9,3 +9,5 @@ spring:
     port: 6379
 server:
   port: 8081
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
