@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
-@Service
+@Service("joeUserDetailService")
 public class JoeUserDetailServiceImpl implements UserDetailsService {
     @Autowired
     private ISysUserService userService;
@@ -33,13 +33,22 @@ public class JoeUserDetailServiceImpl implements UserDetailsService {
 
         Integer userId = user.getUserId();
 
+        //权限系统中的权限分为三种:页面权限,操作权限,数据权限
+        //页面权限:访问当前url所需要的权限(Spring Security配置中的hasRole/hasAuthority)
+        //操作权限:执行操作所需要的权限(Controller中方法的@PrePost注解
+        //数据权限:限制用户能看到的数据,同时取决于用户的角色和部门(一般在SQL语句中做限制)
+
+        //获取访问菜单所需要的权限
         Set<String> permissions = userService.findPermsByUserId(userId);
+        //获取角色的id
         Set<String> roleIds = userService.findRoleIdByUserId(userId);
 
         permissions.addAll(roleIds);
 
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(permissions.toArray(new String[0]));
 
-        return new JoeUserDetails(userId, user.getUsername(), user.getPassword(), authorities);
+        UserDetails userDetails= new JoeUserDetails(userId, user.getUsername(), user.getPassword(), authorities);
+
+        return userDetails;
     }
 }

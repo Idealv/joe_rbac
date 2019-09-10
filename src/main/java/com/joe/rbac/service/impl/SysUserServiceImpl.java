@@ -2,15 +2,20 @@ package com.joe.rbac.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.joe.rbac.constant.JoeConst;
 import com.joe.rbac.entity.SysUser;
+import com.joe.rbac.exception.BaseException;
 import com.joe.rbac.mapper.SysUserMapper;
 import com.joe.rbac.service.ISysMenuService;
 import com.joe.rbac.service.ISysUserRoleService;
 import com.joe.rbac.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Wrapper;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +37,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private ISysUserRoleService userRoleService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Override
     public SysUser findByUsername(String username) {
@@ -51,5 +61,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .stream()
                 .map(sysUserRole -> "ROLE_" + sysUserRole.getRoleId())
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String login(String username, String password, String captcha, HttpServletRequest request) {
+        Object kaptcha = redisTemplate.opsForValue().get(JoeConst.JOE_IMAGE_SESSION_KEY);
+
+        if (kaptcha==null){
+            throw new BaseException("验证码失效");
+        }
+
+        if (!captcha.toLowerCase().equals(kaptcha)){
+            throw new BaseException("验证码错误");
+        }
+
+
+
+        return null;
     }
 }

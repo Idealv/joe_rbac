@@ -2,10 +2,10 @@ package com.joe.rbac;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableAsync
+//@EnableAsync
 public class RbacApplication {
 
     public static void main(String[] args) {

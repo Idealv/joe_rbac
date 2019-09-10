@@ -11,3 +11,10 @@ server:
   port: 8081
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
+
+# jwt config
+jwt:
+  secret: mySecret
+  header: Authorization
+  tokenHeader: Bearer
+  expiration: 3600 #ms

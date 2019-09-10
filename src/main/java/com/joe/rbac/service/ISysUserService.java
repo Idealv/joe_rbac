@@ -3,6 +3,7 @@ package com.joe.rbac.service;
 import com.joe.rbac.entity.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
 /**
@@ -20,4 +21,7 @@ public interface ISysUserService extends IService<SysUser> {
     Set<String> findPermsByUserId(Integer userId);
 
     Set<String> findRoleIdByUserId(Integer userId);
+
+    String login(String username, String password, String captcha, HttpServletRequest request);
+
 }

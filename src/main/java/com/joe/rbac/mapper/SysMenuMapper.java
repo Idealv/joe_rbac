@@ -22,3 +22,13 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
             "          and ur.role_id = rm.role_id and rm.menu_id = m.menu_id")
     List<String> findPermsByUserId(Integer userId);
 }
+//menu:id name perms
+//user:id name
+//user_role:id user_id role_id
+//role_menu:id role_id menu_id
+
+//menu user user_role role_menu
+
+//user->user_role->role_menu->menu
+//根据user_id查找user的role,通过role的id找到role对应的menu
+
