@@ -21,6 +21,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         String info = "请求访问: " + request.getRequestURI() + "经过jwt认证失败,无法获取系统资源";
         log.error(info);
+        log.error(e.getMessage());
         SecurityUtil.response(HttpStatus.UNAUTHORIZED,
                 ServerResponse.createByErrorMessage(info), response);
     }

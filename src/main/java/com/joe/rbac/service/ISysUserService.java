@@ -22,6 +22,6 @@ public interface ISysUserService extends IService<SysUser> {
 
     Set<String> findRoleIdByUserId(Integer userId);
 
-    String login(String username, String password, String captcha, HttpServletRequest request);
+    String login(String username, String password, String captcha);
 
 }

@@ -6,6 +6,8 @@ import com.joe.rbac.constant.JoeConst;
 import com.joe.rbac.entity.SysUser;
 import com.joe.rbac.exception.BaseException;
 import com.joe.rbac.mapper.SysUserMapper;
+import com.joe.rbac.security.JoeUserDetails;
+import com.joe.rbac.security.utils.JwtUtil;
 import com.joe.rbac.service.ISysMenuService;
 import com.joe.rbac.service.ISysUserRoleService;
 import com.joe.rbac.service.ISysUserService;
@@ -13,10 +15,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Wrapper;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +50,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Override
     public SysUser findByUsername(String username) {
         return baseMapper.selectOne(Wrappers.<SysUser>lambdaQuery()
@@ -64,8 +74,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public String login(String username, String password, String captcha, HttpServletRequest request) {
-        Object kaptcha = redisTemplate.opsForValue().get(JoeConst.JOE_IMAGE_SESSION_KEY);
+    public String login(String username, String password, String captcha) {
+        //todo 判断用户信息是否存在于数据库中
+
+        //在redis中获取验证码值
+        //Object kaptcha = redisTemplate.opsForValue().get(JoeConst.JOE_IMAGE_SESSION_KEY);
+
+        String kaptcha = "1234";
 
         if (kaptcha==null){
             throw new BaseException("验证码失效");
@@ -75,8 +90,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BaseException("验证码错误");
         }
 
+        Authentication authentication=null;
 
+        try{
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        }catch (Exception e){
+            //todo 添加异常判断，根据抛出的异常类型进行不同的处理
+        }
 
-        return null;
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        JoeUserDetails joeUserDetails= (JoeUserDetails) authentication.getPrincipal();
+
+        return jwtUtil.generateToken(joeUserDetails);
     }
+
 }

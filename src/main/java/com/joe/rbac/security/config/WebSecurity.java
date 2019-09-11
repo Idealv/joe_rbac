@@ -1,5 +1,6 @@
 package com.joe.rbac.security.config;
 
+import com.joe.rbac.security.filter.JwtAuthenticationTokenFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,11 +17,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)//enable @PrePost annotation
+@EnableGlobalMethodSecurity(prePostEnabled = true)//enable @PrePost annotation
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -31,6 +34,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Autowired
     private AccessDeniedHandler accessDeniedHandler;
 
+    @Autowired
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     //解决authenticationManager无法导入的问题
     @Bean
@@ -38,7 +43,6 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
     }
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -71,13 +75,13 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/captcha.jpg")
                 .permitAll()
                 // 访问/user 需要拥有admin权限
-                .antMatchers("/user").hasAuthority("ROLE_ADMIN")
+                //.antMatchers("/user").hasAuthority("ROLE_ADMIN")
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated()
                 .and()
                 .headers().frameOptions().disable();
         // 添加JWT filter
-        //httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     //自定义认证策略

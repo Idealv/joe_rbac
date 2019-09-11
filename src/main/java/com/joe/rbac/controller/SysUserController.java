@@ -1,6 +1,8 @@
 package com.joe.rbac.controller;
 
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -14,8 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-09-08
  */
 @RestController
-@RequestMapping("/sys-user")
+@RequestMapping("/user")
 public class SysUserController {
 
+    @PreAuthorize("hasAuthority('sys:user:view')")
+    @GetMapping
+    public String list(){
+        return "There is user view";
+    }
 }
 

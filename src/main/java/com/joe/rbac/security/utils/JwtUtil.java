@@ -59,10 +59,35 @@ public class JwtUtil {
                 .compact();
     }
 
+//    public JoeUserDetails getUserByToken1(String accessToken){
+//        String token = accessToken;
+//
+//        if (StringUtils.isNotEmpty(token)){
+//            Claims claims = getClaimsFromToken(token);
+//
+//            if (claims==null) return null;
+//
+//            String username = claims.getSubject();
+//
+//            if (username==null||isTokenExpired(token))
+//                return null;
+//
+//            Collection<? extends GrantedAuthority> authorities = (Collection<? extends GrantedAuthority>) claims.get(AUTHORITIES);
+//            Integer userId = (Integer) claims.get(USERID);
+//
+//            if (validateToken(username,token))
+//                return new JoeUserDetails(userId, username, "", authorities);
+//
+//        }
+//
+//        return null;
+//    }
+
 
     //将token解析为userDetails的实现类
     public JoeUserDetails getUserByToken(HttpServletRequest request) {
-        String token = getToken(request.getHeader(accessTokenHeader));
+        String token = getToken(request);
+        //String token = accessToken;
 
         if (StringUtils.isNotEmpty(token)){
             Claims claims = getClaimsFromToken(token);
@@ -86,7 +111,8 @@ public class JwtUtil {
     }
 
     //截取accessToken中的正文
-    private String getToken(String accessToken) {
+    private String getToken(HttpServletRequest request) {
+        String accessToken = request.getHeader(header);
         //token结构: Bearer xxxxxxxxx
         if (StringUtils.isNotEmpty(accessToken)) {
             //截去"Bearer "
