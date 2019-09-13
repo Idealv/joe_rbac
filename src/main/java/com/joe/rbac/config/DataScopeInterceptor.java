@@ -15,10 +15,7 @@ import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Intercepts;
-import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.springframework.security.core.GrantedAuthority;
@@ -101,6 +98,30 @@ public class DataScopeInterceptor extends AbstractSqlParserHandler implements In
 
 
         return invocation.proceed();
+    }
+
+    /**
+     * 生成拦截对象的代理
+     *
+     * @param target 目标对象
+     * @return 代理对象
+     */
+    @Override
+    public Object plugin(Object target) {
+        if (target instanceof StatementHandler) {
+            return Plugin.wrap(target, this);
+        }
+        return target;
+    }
+
+    /**
+     * mybatis配置的属性
+     *
+     * @param properties mybatis配置的属性
+     */
+    @Override
+    public void setProperties(Properties properties) {
+
     }
 
     private DataScope getDataScope(Object parameterObject){
