@@ -31,6 +31,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+        //传入accessToken后，将token转化为userDetails
+        //不传accessToken就会进入下一个filter，也就是UsernamePasswordAuthenticationFilter
         JoeUserDetails userDetails = jwtUtil.getUserByToken(request);
         if (userDetails != null) {
             Set<String> permissions = userService.findPermsByUserId(userDetails.getUserId());

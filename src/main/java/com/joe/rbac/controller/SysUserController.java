@@ -1,6 +1,7 @@
 package com.joe.rbac.controller;
 
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ public class SysUserController {
     @GetMapping
     public String list(){
         return "There is user view";
+        //return new ResponseEntity<>()
     }
 }
 
